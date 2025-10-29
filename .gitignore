@@ -1,0 +1,5 @@
+.env
+*.ipynb
+*.db
+*.csv
+__pycache__/
