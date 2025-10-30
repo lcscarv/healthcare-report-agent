@@ -8,18 +8,40 @@ class MetricsTool(BaseTool):
     name = "metrics_tool"
     description = "A tool to compute various metrics for data analysis."
 
-    def _generate_last_month_data(self, data: pd.DataFrame) -> pd.DataFrame:
+    def _get_previous_month(self, year: int, month: int) -> tuple[int, int]:
+        if month == 1:
+            return year - 1, 12
+        else:
+            return year, month - 1
+
+    def get_month_data(
+        self, data: pd.DataFrame, year: int, month: int, cutoff_day: int
+    ) -> pd.DataFrame:
+        filter_mask = (
+            (data["DT_SIN_PRI"].dt.year == year)
+            & (data["DT_SIN_PRI"].dt.month == month)
+            & (data["DT_SIN_PRI"].dt.day <= cutoff_day)
+        )
+        return data[filter_mask]
+
+    def _generate_last_month_data(
+        self, data: pd.DataFrame
+    ) -> tuple[pd.DataFrame, pd.DataFrame]:
         if data.DT_SIN_PRI.dtype != "datetime64[ns]":
             data["DT_SIN_PRI"] = pd.to_datetime(
                 data["DT_SIN_PRI"], errors="coerce", format="%Y-%m-%d"
             )
         last_date = data.DT_SIN_PRI.max()
-        last_month_data = data[
-            pd.to_datetime(data.DT_SIN_PRI)
-            >= (pd.to_datetime(last_date) - pd.DateOffset(months=1))
-        ]
-        last_month_data.MONTH = pd.to_datetime(last_month_data.DT_SIN_PRI).dt.month
-        return last_month_data
+        cutoff_day = last_date.day
+        year, month = last_date.year, last_date.month
+        prev_month_year, prev_month = self._get_previous_month(year, month)
+
+        previous_month_data = self.get_month_data(
+            data, prev_month_year, prev_month, cutoff_day
+        )
+        current_month_data = self.get_month_data(data, year, month, cutoff_day)
+
+        return previous_month_data, current_month_data
 
     def _calculate_total_mortality_rate(self, data: pd.DataFrame) -> float:
         total_cases = len(data)
