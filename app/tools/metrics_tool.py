@@ -24,9 +24,7 @@ class MetricsTool(BaseTool):
         )
         return data[filter_mask]
 
-    def _generate_last_month_data(
-        self, data: pd.DataFrame
-    ) -> tuple[pd.DataFrame, pd.DataFrame]:
+    def _generate_last_month_data(self, data: pd.DataFrame) -> pd.DataFrame:
         if data.DT_SIN_PRI.dtype != "datetime64[ns]":
             data["DT_SIN_PRI"] = pd.to_datetime(
                 data["DT_SIN_PRI"], errors="coerce", format="%Y-%m-%d"
@@ -41,7 +39,7 @@ class MetricsTool(BaseTool):
         )
         current_month_data = self.get_month_data(data, year, month, cutoff_day)
 
-        return previous_month_data, current_month_data
+        return pd.concat([previous_month_data, current_month_data], axis=0)
 
     def _calculate_total_mortality_rate(self, data: pd.DataFrame) -> float:
         total_cases = len(data)
@@ -49,30 +47,39 @@ class MetricsTool(BaseTool):
         mortality_rate = (deaths / total_cases) * 100 if total_cases > 0 else 0
         return mortality_rate
 
-    def _calculate_last_month_mortality_rate(self, data: pd.DataFrame) -> float:
-        last_month_data = self._generate_last_month_data(data)
-        total_cases_last_month = len(last_month_data)
-        deaths_last_month = last_month_data[last_month_data.EVOLUCAO == 3][
-            "EVOLUCAO"
-        ].sum()
-        mortality_rate_last_month = (
-            (deaths_last_month / total_cases_last_month) * 100
-            if total_cases_last_month > 0
-            else 0
+    def _metric_calculation_function(
+        self, data: pd.DataFrame, column: str, mask: pd.Series[bool]
+    ) -> float:
+        filtered_data = data[mask]
+        return (
+            filtered_data[column].value_counts().sort_index().pct_change().iloc[-1]
+            * 100
         )
-        return mortality_rate_last_month
+
+    def _calculate_last_month_mortality_rate(self, data: pd.DataFrame) -> float:
+        month_comparison_data = self._generate_last_month_data(data)
+
+        month_compared_mortality_rate = self._metric_calculation_function(
+            month_comparison_data, "EVOLUCAO", (month_comparison_data.EVOLUCAO == 3)
+        )
+
+        return month_compared_mortality_rate
 
     def _calculate_case_increase_rate(self, data: pd.DataFrame) -> float:
         last_month_data = self._generate_last_month_data(data)
-        month_counts = last_month_data.MONTH.value_counts().sort_index()
-        return month_counts.pct_change().iloc[-1] * 100
+
+        month_compared_case_growth_rate = self._metric_calculation_function(
+            last_month_data, "DT_SIN_PRI", last_month_data.DT_SIN_PRI.notna()
+        )
+        return month_compared_case_growth_rate
 
     def _calculate_uti_admission_rate(self, data: pd.DataFrame) -> float:
         last_month_data = self._generate_last_month_data(data)
-        uti_admission_counts = (
-            last_month_data[last_month_data.UTI == 1]["UTI"].value_counts().sort_index()
+
+        month_compared_uti_admission_rate = self._metric_calculation_function(
+            last_month_data, "UTI", (last_month_data.UTI == 1)
         )
-        return uti_admission_counts.pct_change().iloc[-1] * 100
+        return month_compared_uti_admission_rate
 
     def _run(self, data: pd.DataFrame) -> dict[str, Any]:
         metrics = {
