@@ -18,6 +18,7 @@ class MetricsTool(BaseTool):
             pd.to_datetime(data.DT_SIN_PRI)
             >= (pd.to_datetime(last_date) - pd.DateOffset(months=1))
         ]
+        last_month_data.MONTH = pd.to_datetime(last_month_data.DT_SIN_PRI).dt.month
         return last_month_data
 
     def _calculate_total_mortality_rate(self, data: pd.DataFrame) -> float:
@@ -41,9 +42,15 @@ class MetricsTool(BaseTool):
 
     def _calculate_case_increase_rate(self, data: pd.DataFrame) -> float:
         last_month_data = self._generate_last_month_data(data)
-        last_month_data.MONTH = pd.to_datetime(last_month_data.DT_SIN_PRI).dt.month
         month_counts = last_month_data.MONTH.value_counts().sort_index()
         return month_counts.pct_change().iloc[-1] * 100
+
+    def _calculate_uti_admission_rate(self, data: pd.DataFrame) -> float:
+        last_month_data = self._generate_last_month_data(data)
+        uti_admission_counts = (
+            last_month_data[last_month_data.UTI == 1]["UTI"].value_counts().sort_index()
+        )
+        return uti_admission_counts.pct_change().iloc[-1] * 100
 
     def _run(self, data: pd.DataFrame) -> dict[str, Any]:
         metrics = {
