@@ -1,7 +1,10 @@
-import pandas as pd
+from app.agents.state import AgentState
 from app.tools.metrics_tool import MetricsTool
 
 
-def metrics_node(srag_data: pd.DataFrame) -> str:
+def metrics_node(state: AgentState) -> AgentState:
+    srag_data = state["data"]
     tool = MetricsTool()
-    return tool.run(srag_data)  # type: ignore
+    metrics = tool.run(srag_data)
+    state["metrics"] = metrics
+    return state
