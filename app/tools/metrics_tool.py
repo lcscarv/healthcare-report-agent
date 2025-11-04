@@ -5,8 +5,8 @@ from langchain_core.tools import BaseTool
 
 
 class MetricsTool(BaseTool):
-    name = "metrics_tool"
-    description = "A tool to compute various metrics for data analysis."
+    name: str = "metrics_tool"
+    description: str = "A tool to compute various metrics for data analysis."
 
     def _get_previous_month(self, year: int, month: int) -> tuple[int, int]:
         if month == 1:
