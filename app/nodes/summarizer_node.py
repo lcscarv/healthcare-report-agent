@@ -1,4 +1,3 @@
-from langchain_core.messages import AIMessage
 from langchain_openai import ChatOpenAI
 
 from app.agents.state import AgentState
