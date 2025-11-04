@@ -90,3 +90,15 @@ class MetricsTool(BaseTool):
             "case_increase_rate": self._calculate_case_increase_rate(data),
         }
         return metrics
+
+    def run(self, tool_input: pd.DataFrame) -> dict[str, Any]:
+        """
+        Override the run method to accept a DataFrame as input.
+
+        Args:
+            tool_input (pd.DataFrame): The input data for metrics calculation.
+
+        Returns:
+            dict[str, Any]: The calculated metrics.
+        """
+        return self._run(tool_input)
