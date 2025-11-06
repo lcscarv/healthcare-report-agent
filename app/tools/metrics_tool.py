@@ -1,6 +1,7 @@
 from typing import Any
 
 import pandas as pd
+import numpy as np
 from langchain_core.tools import BaseTool
 
 
@@ -48,19 +49,22 @@ class MetricsTool(BaseTool):
         return mortality_rate
 
     def _metric_calculation_function(
-        self, data: pd.DataFrame, column: str, mask: pd.Series[bool]
+        self, data: pd.DataFrame, mask: pd.Series
     ) -> float:
         filtered_data = data[mask]
+        filtered_data.MONTH = pd.to_datetime(filtered_data.DT_SIN_PRI).dt.month
+        metric_agg_data = filtered_data.MONTH.value_counts().sort_index()
         return (
-            filtered_data[column].value_counts().sort_index().pct_change().iloc[-1]
-            * 100
+            metric_agg_data.pct_change().iloc[-1] * 100
+            if len(metric_agg_data) > 1
+            else np.nan
         )
 
     def _calculate_last_month_mortality_rate(self, data: pd.DataFrame) -> float:
         month_comparison_data = self._generate_last_month_data(data)
 
         month_compared_mortality_rate = self._metric_calculation_function(
-            month_comparison_data, "EVOLUCAO", (month_comparison_data.EVOLUCAO == 3)
+            month_comparison_data, (month_comparison_data.EVOLUCAO == 3)
         )
 
         return month_compared_mortality_rate
@@ -69,7 +73,7 @@ class MetricsTool(BaseTool):
         last_month_data = self._generate_last_month_data(data)
 
         month_compared_case_growth_rate = self._metric_calculation_function(
-            last_month_data, "DT_SIN_PRI", last_month_data.DT_SIN_PRI.notna()
+            last_month_data, last_month_data.DT_SIN_PRI.notna()
         )
         return month_compared_case_growth_rate
 
@@ -77,7 +81,7 @@ class MetricsTool(BaseTool):
         last_month_data = self._generate_last_month_data(data)
 
         month_compared_uti_admission_rate = self._metric_calculation_function(
-            last_month_data, "UTI", (last_month_data.UTI == 1)
+            last_month_data, (last_month_data.UTI == 1)
         )
         return month_compared_uti_admission_rate
 
