@@ -1,5 +1,4 @@
 import pandas as pd
-from sqlalchemy.engine import Engine
 
 from app.agents.state import AgentState
 from app.config.settings import load_settings
