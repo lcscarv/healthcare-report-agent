@@ -8,11 +8,8 @@ settings = load_settings()
 
 
 def summmarizer_node(state: AgentState) -> AgentState:
-    llm = ChatOpenAI(
-        model=settings.model_name, temperature=0, api_key=settings.openai_api_key
-    )
-    state["llm"] = llm
-    prompt = PromptTemplates.REPORT_SUMMARY.value.format(data=state["context"])
+    llm = state.llm
+    prompt = PromptTemplates.REPORT_SUMMARY.value.format(data=state.context)
     response = llm.invoke(prompt)
-    state["response"] = response
+    state.response = response
     return state

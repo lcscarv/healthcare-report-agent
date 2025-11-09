@@ -12,5 +12,5 @@ def data_loader_node(state: AgentState) -> AgentState:
     with engine.connect() as conn:
         df = pd.read_sql_table(table_name, conn, parse_dates=["DT_SIN_PRI"])
 
-    state["data"] = df
+    state.data = df
     return state
