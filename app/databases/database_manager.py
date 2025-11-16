@@ -1,7 +1,6 @@
 import logging
 
 from sqlalchemy import (
-    create_engine,
     MetaData,
     Table,
     Column,
@@ -12,12 +11,9 @@ from sqlalchemy import (
     Engine,
 )
 from sqlalchemy.exc import SQLAlchemyError
-from app.config.settings import load_settings
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-settings = load_settings()
 
 
 def create_database(engine: Engine) -> None:
@@ -41,8 +37,3 @@ def create_database(engine: Engine) -> None:
         logger.info("Database and tables created successfully.")
     except SQLAlchemyError as e:
         logger.error(f"Error creating database: {e}")
-
-
-if __name__ == "__main__":
-    engine = create_engine(settings.database_url)
-    create_database(engine)
