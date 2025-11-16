@@ -77,7 +77,7 @@ class MetricsTool(BaseTool):
         )
         return month_compared_case_growth_rate
 
-    def _calculate_uti_admission_rate(self, data: pd.DataFrame) -> float:
+    def _calculate_icu_admission_rate(self, data: pd.DataFrame) -> float:
         last_month_data = self._generate_last_month_data(data)
 
         month_compared_uti_admission_rate = self._metric_calculation_function(
@@ -92,8 +92,14 @@ class MetricsTool(BaseTool):
                 data
             ),
             "case_increase_rate": self._calculate_case_increase_rate(data),
+            "icu_admission_rate": self._calculate_icu_admission_rate(data),
         }
-        return metrics
+
+        formatted_metrics = {
+            k: (round(float(v), 1) if isinstance(v, float) else v)
+            for k, v in metrics.items()
+        }
+        return formatted_metrics
 
     def run(self, tool_input: pd.DataFrame) -> dict[str, Any]:
         """
