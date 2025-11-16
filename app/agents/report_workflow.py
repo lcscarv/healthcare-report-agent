@@ -18,8 +18,8 @@ workflow.add_node("summarizer_node", summmarizer_node)
 
 workflow.add_edge(START, "data_loader_node")
 workflow.add_edge("data_loader_node", "metrics_node")
-workflow.add_edge("metrics_node", "web_metrics_node")
-workflow.add_edge("web_metrics_node", "context_builder_node")
+workflow.add_edge("metrics_node", "web_search_node")
+workflow.add_edge("web_search_node", "context_builder_node")
 workflow.add_edge("context_builder_node", "summarizer_node")
 workflow.add_edge("summarizer_node", END)
 
