@@ -3,6 +3,8 @@ from functools import lru_cache
 from sqlalchemy.engine import create_engine, Engine
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.databases.database_manager import create_database
+
 
 class Settings(BaseSettings):
     srag_data_path: str
@@ -22,6 +24,7 @@ class Settings(BaseSettings):
     def engine(self) -> Engine:
         if not hasattr(self, "_engine"):
             self._engine = create_engine(self.database_url)
+            create_database(self._engine)
         return self._engine
 
 
