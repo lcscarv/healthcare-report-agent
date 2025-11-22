@@ -7,10 +7,8 @@ settings = load_settings()
 engine = settings.engine
 
 
-def data_loader_node(state: AgentState) -> AgentState:
+def data_loader_node(state: AgentState) -> dict[str, pd.DataFrame]:
     table_name = settings.table_name
     with engine.connect() as conn:
         df = pd.read_sql_table(table_name, conn, parse_dates=["DT_SIN_PRI"])
-
-    state.data = df
-    return state
+    return {"data": df}
