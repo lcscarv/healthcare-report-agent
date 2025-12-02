@@ -1,4 +1,6 @@
 import logging
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 import requests
 from bs4 import BeautifulSoup
@@ -37,6 +39,16 @@ class WebSearchTool(BaseTool):
             logger.info(f"An error occurred during the web search: {str(e)}")
             return []
 
+    def _filter_news_by_date(self, news: list[dict]) -> list[dict]:
+        now = datetime.now()
+        one_month_ago = now - relativedelta(months=1)
+        return [
+            n
+            for n in news
+            if datetime.strptime(n["published_at"].strip(), "%Y-%m-%d %H:%M:%S %Z")
+            >= one_month_ago
+        ]
+
     def _extract_news_content(self, url: str) -> str:
         try:
             response = requests.get(
@@ -44,7 +56,11 @@ class WebSearchTool(BaseTool):
             )
             soup = BeautifulSoup(response.content, "html.parser")
             article = soup.find("article")
-            paragraphs = article.find_all("p") if article else soup.find_all("p")
+            paragraphs = (
+                article.find_all("p")
+                if len(article.find_all("p")) > 5
+                else soup.find_all("p")
+            )
             content = "\n".join([para.get_text() for para in paragraphs])
             return content
         except Exception as e:
@@ -53,8 +69,9 @@ class WebSearchTool(BaseTool):
 
     def get_srag_news(self, query: str, num_results: int = 5) -> str:
         news = self._search_news(query, num_results)
+        recent_news = self._filter_news_by_date(news)
         news_contents = []
-        for item in news:
+        for item in recent_news:
             title = item.get("title", "No Title")
             link = item.get("link", "")
             snippet = item.get("snippet", "")
