@@ -2,10 +2,9 @@ from typing import Any
 
 import pandas as pd
 import numpy as np
-from langchain_core.tools import BaseTool
 
 
-class MetricsTool(BaseTool):
+class MetricsTool:
     name: str = "metrics_tool"
     description: str = "A tool to compute various metrics for data analysis."
 
@@ -93,7 +92,7 @@ class MetricsTool(BaseTool):
         )
         return month_compared_vaccination_rate
 
-    def _run(self, data: pd.DataFrame) -> dict[str, Any]:
+    def run(self, data: pd.DataFrame) -> dict[str, Any]:
         metrics = {
             "last_month_mortality_rate": self._calculate_last_month_mortality_rate(
                 data
@@ -108,15 +107,3 @@ class MetricsTool(BaseTool):
             for k, v in metrics.items()
         }
         return formatted_metrics
-
-    def run(self, tool_input: pd.DataFrame) -> dict[str, Any]:
-        """
-        Override the run method to accept a DataFrame as input.
-
-        Args:
-            tool_input (pd.DataFrame): The input data for metrics calculation.
-
-        Returns:
-            dict[str, Any]: The calculated metrics.
-        """
-        return self._run(tool_input)
