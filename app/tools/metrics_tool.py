@@ -85,14 +85,22 @@ class MetricsTool(BaseTool):
         )
         return month_compared_uti_admission_rate
 
+    def _calculate_vaccination_rate(self, data: pd.DataFrame) -> float:
+        last_month_data = self._generate_last_month_data(data)
+
+        month_compared_vaccination_rate = self._metric_calculation_function(
+            last_month_data, (last_month_data.VACINA == 1)
+        )
+        return month_compared_vaccination_rate
+
     def _run(self, data: pd.DataFrame) -> dict[str, Any]:
         metrics = {
-            "total_mortality_rate": self._calculate_total_mortality_rate(data),
             "last_month_mortality_rate": self._calculate_last_month_mortality_rate(
                 data
             ),
             "case_increase_rate": self._calculate_case_increase_rate(data),
             "icu_admission_rate": self._calculate_icu_admission_rate(data),
+            "vaccination_rate": self._calculate_vaccination_rate(data),
         }
 
         formatted_metrics = {
