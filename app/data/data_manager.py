@@ -124,7 +124,7 @@ class DataManager:
             )
 
 
-def processing_pipeline(engine: Engine):
+def run_etl_pipeline(engine: Engine):
     data_manager = DataManager()
     logger.info("Getting SRAG data path.")
     file_pattern = "/INFLUD\d{2}-\d{2}-\d{2}-\d{4}\.csv"
@@ -140,4 +140,4 @@ def processing_pipeline(engine: Engine):
 
 
 if __name__ == "__main__":
-    processing_pipeline(settings.engine)
+    run_etl_pipeline(settings.engine)
