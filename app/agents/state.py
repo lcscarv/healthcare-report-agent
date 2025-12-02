@@ -14,6 +14,8 @@ class AgentState:
     metrics: Optional[dict[str, float]] = None
     news_content: Optional[str] = None
     response: Optional[AIMessage] = None
+    plot_data: Optional[dict[str, pd.DataFrame]] = None
+    plot_insights: Optional[AIMessage] = None
 
     @classmethod
     def initialize_state(cls, data: pd.DataFrame, llm: BaseChatModel):
