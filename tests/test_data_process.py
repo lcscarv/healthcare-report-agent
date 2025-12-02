@@ -45,3 +45,9 @@ def test_preprocess_data(sample_srag_data, processed_srag_data):
         preprocessed_data.reset_index(drop=True),
         processed_srag_data.reset_index(drop=True),
     )
+
+
+def test_obtain_url():
+    file_pattern = "INFLUD\d{2}-\d{2}-\d{2}-\d{4}\.csv"
+    url = manager.get_latest_file_url(file_pattern)
+    assert url.endswith(".csv")
