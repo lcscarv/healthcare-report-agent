@@ -49,6 +49,7 @@ def test_insert_and_read_data(db_engine, mock_data):
     data_manager.load_to_database(mock_data, db_engine)
     with db_engine.connect() as conn:
         df_read = pd.read_sql_table("srag_features", conn, parse_dates=["DT_SIN_PRI"])
+        df_read.drop(columns=["id"], inplace=True)
     assert not df_read.empty
     assert df_read.shape == mock_data.shape
     assert set(mock_data.columns) == set(df_read.columns)
