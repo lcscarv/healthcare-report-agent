@@ -21,7 +21,7 @@ class WebSearchTool(BaseTool):
         "Useful for obtaining up-to-date information on various topics."
     )
 
-    def _search_news(self, query: str, num_results: int = 5) -> list[dict]:
+    def _search_news(self, query: str, num_results: int) -> list[dict]:
         try:
             search = GoogleSearch(
                 {
@@ -42,12 +42,20 @@ class WebSearchTool(BaseTool):
     def _filter_news_by_date(self, news: list[dict]) -> list[dict]:
         now = datetime.now()
         one_month_ago = now - relativedelta(months=1)
-        return [
+        filtered = [
             n
             for n in news
             if datetime.strptime(n["published_at"].strip(), "%Y-%m-%d %H:%M:%S %Z")
             >= one_month_ago
         ]
+        if not filtered:
+            sorted_news = sorted(
+                news,
+                key=lambda n: n["published_at"],
+                reverse=True,
+            )
+            return sorted_news[:5]
+        return filtered
 
     def _extract_news_content(self, url: str) -> str:
         try:
@@ -67,7 +75,7 @@ class WebSearchTool(BaseTool):
             logger.info(f"An error occurred while extracting content: {str(e)}")
             return "Content could not be retrieved."
 
-    def get_srag_news(self, query: str, num_results: int = 5) -> str:
+    def get_srag_news(self, query: str, num_results: int = 30) -> str:
         news = self._search_news(query, num_results)
         recent_news = self._filter_news_by_date(news)
         news_contents = []
