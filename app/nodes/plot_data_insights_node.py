@@ -14,4 +14,4 @@ def get_plot_insights_node(state: AgentState) -> dict[str, AIMessage]:
     )
     response = llm.invoke(prompt)
 
-    return {"chart_insights": response}
+    return {"plot_insights": response}
