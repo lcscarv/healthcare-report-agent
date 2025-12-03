@@ -8,5 +8,5 @@ def context_builder_node(state: AgentState) -> dict[str, dict]:
     plot_insights = state.plot_insights
     context: dict[str, Any] = metrics.copy()
     context["news_content"] = news_content
-    context["plot_insights"] = plot_insights
+    context["plot_insights"] = plot_insights.content if plot_insights else None
     return {"context": context}
