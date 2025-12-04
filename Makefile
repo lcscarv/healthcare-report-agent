@@ -1,23 +1,22 @@
-.PHONY: build up down logs run feed-database run-report generate-report create-test-data run-tests create-data-run-tests
+.PHONY: build up build-up down logs run feed-database run-report generate-report create-test-data run-tests create-data-run-tests
 
-# Build the Docker image
 build:
 	docker-compose build
 
-# Start the Docker containers
 up:
 	docker-compose up -d
 
-# Stop the Docker containers
 down:
 	docker-compose down
 
-# View logs from the app container
 logs:
 	docker-compose logs -f app
 
 run:
 	docker-compose run app
+
+build-up-run: build up run
+
 
 feed-database:
 	python -m app.data.data_manager
