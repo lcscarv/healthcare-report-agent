@@ -90,17 +90,17 @@ cd healthcare-report-agent
 ## 🐳 Docker Setup
 
 ### 1. **Build and Run with Docker Compose**
-- Build the Docker image and start the services:
+- Build the Docker image, start the services, and run the application:
   ```bash
-  docker-compose up --build
+  make build-up-run
   ```
-
-- Access the dashboard at [http://localhost:8000](http://localhost:8000).
+  
+- Access the dashboard at [http://localhost:8501](http://localhost:8501).
 
 ### 2. **Stop the Services**
 - To stop the services, run:
   ```bash
-  docker-compose down
+  make down
   ```
 
 ---
@@ -151,25 +151,17 @@ In Progress.
 
 | Command                  | Description                                   |
 |--------------------------|-----------------------------------------------|
-| `make feed-database`     | Run the ETL pipeline to load data into the database. |
+| `make build`     | Build the Docker image. |
+| `make up`     | Start the Docker container. |
+| `make build-up`     | Build and start the Docker container. |
+| `make down`     | Stop the Docker container. |
+| `make logs`     | View logs from the app container. |
+| `make run`     | Run app container. |
 | `make run-report`        | Start the Streamlit dashboard.               |
 | `make generate-report`   | Run the ETL pipeline and start the dashboard. |
 | `make create-test-data`  | Generate test data.                          |
 | `make run-tests`         | Run the test suite.                          |
 | `make create-data-run-tests` | Generate test data and run tests.         |
-
----
-
-## 📚 Dependencies
-
-- **Python**: 3.11
-- **Libraries**:
-  - `pandas`
-  - `sqlalchemy`
-  - `streamlit`
-  - `beautifulsoup4`
-  - `langfuse`
-  - `pytest`
 
 ---
 
