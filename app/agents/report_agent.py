@@ -22,6 +22,8 @@ class ReportAgent:
         return final_state
 
     @classmethod
-    def from_data_and_llm(cls, data: pd.DataFrame, llm: BaseChatModel) -> "ReportAgent":
-        state = AgentState.initialize_state(data, llm)
+    def from_data_and_models(
+        cls, data: pd.DataFrame, llm: BaseChatModel, audit_llm: BaseChatModel
+    ) -> "ReportAgent":
+        state = AgentState.initialize_state(data, llm, audit_llm)
         return cls(state)
