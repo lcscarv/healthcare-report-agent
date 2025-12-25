@@ -1,9 +1,9 @@
 import streamlit as st
 import pandas as pd
-from langchain_openai.chat_models import ChatOpenAI
 
 from app.agents.report_agent import ReportAgent
 from app.config.settings import load_settings
+from app.services.llm_services import create_llm, create_audit_llm
 from app.services.plot_data_service import plot_daily, plot_monthly
 
 settings = load_settings()
@@ -18,10 +18,11 @@ with loading_ph.container():
 
 with engine.connect() as conn:
     data = pd.read_sql_table(settings.table_name, conn, parse_dates=["DT_SIN_PRI"])
-llm = ChatOpenAI(
-    name=settings.model_name, temperature=0, api_key=settings.openai_api_key
-)
-agent = ReportAgent.from_data_and_llm(data, llm)
+
+llm = create_llm(settings.model_name, settings.openai_api_key)
+audit_llm = create_audit_llm(settings.auditor_model_name, settings.openai_api_key)
+
+agent = ReportAgent.from_data_and_models(data, llm, audit_llm)
 final_state = agent.run()
 latest_date = pd.to_datetime(data["DT_SIN_PRI"]).max()
 
