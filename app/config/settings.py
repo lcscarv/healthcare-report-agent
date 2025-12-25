@@ -9,7 +9,8 @@ from app.databases.database_manager import create_database
 class Settings(BaseSettings):
     srag_source_url: str
     database_url: str
-    model_name: str = "gpt-4.o-mini"
+    model_name: str = "gpt-4o-mini"
+    auditor_model_name: str = "gpt-4o"
     openai_api_key: str
     serp_api_key: str
     table_name: str
