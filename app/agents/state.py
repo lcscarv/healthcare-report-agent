@@ -1,8 +1,13 @@
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any, Optional, Protocol
 import pandas as pd
 from langchain_core.messages import AIMessage
 from langchain.chat_models import BaseChatModel
+
+
+class ContinuationState(Protocol):
+    is_valid: bool
+    iteration_count: int
 
 
 @dataclass
