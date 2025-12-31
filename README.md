@@ -27,7 +27,6 @@ healthcare-report-agent/
 │   ├── prompts/           # Prompt templates for AI models
 │   ├── services/          # Services for data visualization
 │   ├── tools/             # Tools for metrics and plotting
-│   ├── utils/             # Utility functions (e.g., tracing)
 ├── streamlit_app.py       # Streamlit dashboard entry point
 ├── Makefile               # Makefile for common tasks
 ├── Dockerfile             # Dockerfile for containerizing the app
