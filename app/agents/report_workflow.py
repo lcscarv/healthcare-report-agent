@@ -1,5 +1,5 @@
 from langgraph.graph import StateGraph, START, END
-from app.agents.state import AgentState
+from app.agents.state import AgentState, ContinuationState
 from app.nodes.plot_data_node import get_plot_data_node
 from app.nodes.plot_data_insights_node import get_plot_insights_node
 from app.nodes.build_context_node import context_builder_node
@@ -9,7 +9,7 @@ from app.nodes.summarizer_node import summmarizer_node
 from app.nodes.audit_summary_node import audit_summary_node
 
 
-def should_continue(state: AgentState) -> str:
+def should_continue(state: ContinuationState) -> str:
     if state.is_valid or state.iteration_count >= 3:
         return END
     return "summarizer_node"
